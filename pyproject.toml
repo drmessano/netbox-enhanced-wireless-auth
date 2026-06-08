@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "enhanced-wireless-auth"
+version = "1.6.0"
+description = "Adds additional wireless authentication and encryption options to NetBox."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [
+    { name = "Danny Messano", email = "drmessano@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/drmessano/netbox-enhanced-wireless-auth"
+"Bug Tracker" = "https://github.com/drmessano/netbox-enhanced-wireless-auth/issues"
+
+[tool.setuptools.packages.find]
+include = ["enhanced_wireless_auth*"]

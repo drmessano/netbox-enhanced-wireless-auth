@@ -1,92 +1,111 @@
 # Enhanced Wireless Authentication for NetBox
 
-Enhanced Wireless Authentication is a NetBox plugin that adds additional wireless authentication and encryption options to NetBox. It overrides and extends the default wireless models with custom choices for authentication types and ciphers, enabling you to better manage your wireless configurations.
+A NetBox plugin that extends the built-in wireless models with additional authentication types and cipher options, enabling more complete wireless configuration management.
 
-Below you'll find instructions for installation, configuration, usage, and development.
+## Compatibility
 
-## 1. Requirements
+| Plugin version | NetBox version |
+|----------------|----------------|
+| 1.6.x          | 4.2 – 4.6      |
+| 1.1.x          | 4.2            |
 
-1. NetBox 4.2.x (compatible with versions 4.2.0 to 4.2.99)  
-2. Python 3.10  
-3. Django (as used by your NetBox installation)
+**Requirements:** Python 3.12+
 
-## 2. Installation
+## Features
 
-1. **Clone the Plugin Repository:**
+- Extended authentication types: Open, OWE, WPA2-PSK, WPA3-PSK, WPA2/WPA3 Mixed, WPA2-Enterprise, WPA3-Enterprise
+- Extended cipher options: Auto, TKIP, CCMP (AES), GCMP (AES-GCM), CCMP+GCMP, CCMP-256, GCMP-256
+- Custom `WirelessProfile` model for managing named wireless configs
 
-    git clone https://github.com/drmessano/enhanced_wireless_auth.git
-    cd enhanced_wireless_auth
+## Installation
 
-2. **Activate the NetBox Virtual Environment:**
+### Production
 
-    source /opt/netbox-4.2.1/venv/bin/activate
+Activate the NetBox virtual environment, then install directly from GitHub:
 
-3. **Install the Plugin in Editable Mode:**
+```bash
+source /opt/netbox/venv/bin/activate
+pip install https://github.com/drmessano/netbox-enhanced-wireless-auth/archive/refs/heads/main.zip
+```
 
-    pip install -e .
+Or clone and install:
 
-## 3. Configuration
+```bash
+git clone https://github.com/drmessano/netbox-enhanced-wireless-auth.git
+source /opt/netbox/venv/bin/activate
+pip install ./netbox-enhanced-wireless-auth
+```
 
-1. **Add the Plugin to the NetBox Configuration:**
+### Development (editable install)
 
-   Edit your NetBox configuration file (typically `configuration.py`) and add the following line to the `PLUGINS` list:
+```bash
+git clone https://github.com/drmessano/netbox-enhanced-wireless-auth.git
+cd netbox-enhanced-wireless-auth
+source /opt/netbox/venv/bin/activate
+pip install -e .
+```
 
-    PLUGINS = [
-        'enhanced_wireless_auth',
-    ]
+## Configuration
 
-2. **Apply Migrations:**
+1. Add the plugin to your NetBox `configuration.py`:
 
-    python /opt/netbox/netbox/manage.py migrate enhanced_wireless_auth
+```python
+PLUGINS = [
+    'enhanced_wireless_auth',
+]
+```
 
-3. **Restart NetBox Services:**
+2. Apply migrations:
 
-    sudo systemctl restart netbox  
+```bash
+python /opt/netbox/netbox/manage.py migrate enhanced_wireless_auth
+```
 
-## 4. Usage
+3. Restart NetBox:
 
-Once installed and configured, the plugin extends the wireless models in NetBox with the following features:
+```bash
+sudo systemctl restart netbox netbox-rq
+```
 
-- Additional authentication types (e.g., OWE, WPA2-PSK, WPA3-PSK, etc.).  
-- Additional cipher options (e.g., Auto, TKIP, CCMP, etc.).  
-- A custom model for managing wireless profiles.
+## Project Structure
 
-You can access these new features via the NetBox UI or through the NetBox API.
+```
+netbox-enhanced-wireless-auth/
+├── enhanced_wireless_auth/
+│   ├── __init__.py        # PluginConfig
+│   ├── apps.py            # AppConfig
+│   ├── choices.py         # Auth type and cipher choice classes
+│   ├── models.py          # WirelessProfile model
+│   └── migrations/
+│       └── 0001_initial.py
+├── pyproject.toml
+└── README.md
+```
 
-## 5. Development
+## Development
 
-For development or further customization:
+Clear compiled bytecode:
 
-1. **Project Structure:**
+```bash
+find . -name "*.pyc" -delete
+find . -name "__pycache__" -type d -exec rm -rf {} +
+```
 
-       enhanced_wireless_auth/
-       ├── enhanced_wireless_auth/
-       │   ├── __init__.py        # Contains PluginConfig and config variable
-       │   ├── apps.py            # Contains the app configuration
-       │   ├── choices.py         # Contains WirelessAuthTypeChoices and WirelessAuthCipherChoices
-       │   ├── models.py          # Contains the WirelessProfile model
-       │   └── migrations/        # Contains migration files (e.g., 0001_initial.py)
-       ├── setup.py               # Packaging file
-       └── README.md              # This file
+Test in the NetBox shell:
 
-2. **Clearing Cache:**
+```bash
+python /opt/netbox/netbox/manage.py shell
+```
 
-       find . -name "*.pyc" -exec rm -f {} \;
-       find . -name "__pycache__" -exec rm -rf {} \;
+```python
+from enhanced_wireless_auth.models import WirelessProfile
+WirelessProfile.objects.all()
+```
 
-3. **Testing:**
+## License
 
-       python /opt/netbox/netbox/manage.py shell
+MIT
 
-   And test imports and model queries:
+## Support
 
-       from enhanced_wireless_auth.models import WirelessProfile
-       print(WirelessProfile.objects.all())
-
-## 6. License
-
-This project is licensed under the MIT License.
-
-## 7. Support
-
-For issues, questions, or contributions, please open an issue on the [GitHub repository](https://github.com/drmessano/enhanced_wireless_auth/issues).
+Open an issue on [GitHub](https://github.com/drmessano/netbox-enhanced-wireless-auth/issues).
